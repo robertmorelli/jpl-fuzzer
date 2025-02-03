@@ -41,7 +41,7 @@ $BB ⊸ $LV : $TT
 $Bf ⊸ $BF ⊕ ε
 $BF ⊸ $BB,$BF ⊕ $BB
 $Bs ⊸ $BS ⊕ ε
-$BS ⊸ $BB ; $BS ⊕ $BB
+$BS ⊸ $Vt : $TT ; $BS ⊕ $Vt : $TT
 $LV ⊸ $Vt ⊕ $Vt [$Vs]
 $Vs ⊸ $VS ⊕ ε
 $VS ⊸ $Vt,$VS ⊕ $Vt
@@ -85,10 +85,10 @@ func randomVariableName() -> String {
     return String([firstChar] + rest)
 }
 func randomInt() -> String {
-    return String(Int.random(in: -100...100))
+    return String(Int.random(in: 0...10000))
 }
 func randomFloat() -> String {
-    return String(Float.random(in: -100...100))
+    return String(Float.random(in: 0...10000))
 }
 func randomString() -> String {
     let notQuote =
@@ -118,7 +118,7 @@ let ε = ""
     "$Bf": { randomChoice(["$BF", ε]) },
     "$BF": { randomChoice(["$BB,$BF", "$BB"]) },
     "$Bs": { randomChoice(["$BS", ε]) },
-    "$BS": { randomChoice(["$BB;$BS", "$BB"]) },
+    "$BS": { randomChoice(["$Vt : $TT ; $BS", "$Vt : $TT"]) },
     "$LV": { randomChoice(["$Vt", "$Vt [$Vs]"]) },
     "$Vs": { randomChoice(["$VS", ε]) },
     "$VS": { randomChoice(["$Vt,$VS", "$Vt"]) },
