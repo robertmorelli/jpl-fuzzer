@@ -14,4 +14,4 @@ guard let cmdCount = Int(CommandLine.arguments[1]) else {
     print("Invalid input")
     exit(1)
 }
-print(createNCommands(n: cmdCount))
+print(createNCommandsToken(n: cmdCount))
