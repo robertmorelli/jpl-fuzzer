@@ -92,7 +92,7 @@ func randomFloat() -> String {
 }
 func randomString() -> String {
     let notQuote =
-        " !#%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+        " !#%&'()*+,-./0123456789:<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
     let notBackslash = notQuote  // same set, because both exclude '\' and '"'
     let maxCount = 10
     var result = "\""
