@@ -75,17 +75,24 @@ import Foundation
 func randomChoice<T>(_ list: [T]) -> T {
     return list.randomElement()!
 }
+let keywords: Set = [
+    "read", "image", "to", "write", "let", "assert", "print", "show", "time", "fn", "struct",
+    "int", "bool", "float", "true", "false", "void", "if", "else", "return", "while", "for",
+    "break", "continue", "switch", "case", "default", "import", "from", "as", "module", "sum",  //thanks AI
+]
 
 func randomVariableName() -> String {
-    let length = Int.random(in: 1...8)  // Random length between 1 and 8
-    let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    let digits = "0123456789"
-    let allChars = letters + digits + "_"
-
-    let firstChar = letters.randomElement() ?? "_"
-    let rest = (1..<length).map { _ in allChars.randomElement() ?? "_" }
-
-    return String([firstChar] + rest)
+    var attempt = ""
+    repeat {
+        let length = Int.random(in: 1...8)
+        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let digits = "0123456789"
+        let allChars = letters + digits + "_"
+        let firstChar = letters.randomElement() ?? "_"
+        let rest = (1..<length).map { _ in allChars.randomElement() ?? "_" }
+        attempt = String([firstChar] + rest)
+    } while keywords.contains(attempt)
+    return attempt
 }
 
 func randomInt() -> String {
@@ -99,7 +106,7 @@ func randomFloat() -> String {
 func randomString() -> String {
     let notQuote =
         " !#%&'()*+,-./0123456789:<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
-    let notBackslash = notQuote  // same set, excluding '\' and '"'
+    let notBackslash = notQuote
     let maxCount = 10
     var result = "\""
     let countNotQuote = Int.random(in: 0...maxCount)
@@ -116,8 +123,6 @@ func randomString() -> String {
     result.append("\"")
     return result
 }
-
-// MARK: - Token and Grammar Definitions
 
 enum token {
     case variable(variable)
@@ -250,7 +255,6 @@ enum variable {
                 [.syntax("return"), .variable(.EE)],
             ])
         case .VV:
-            // Not used in the grammar; provide a fallback similar to TT.
             return randomChoice([
                 [.syntax("int")],
                 [.syntax("bool")],
@@ -292,7 +296,6 @@ extension token {
         case .syntax(let s):
             return s
         case .variable(_):
-            // Should never occur after full expansion.
             return ""
         case .ε:
             return ""
@@ -300,13 +303,19 @@ extension token {
     }
 }
 
-@MainActor func createNCommandsToken(n: Int) -> String {
-    var commands: [String] = []
-    for _ in 0..<n {
-        let tokens = expandToken(.variable(.CC))
-        // Join token strings with a space (feel free to adjust spacing/punctuation)
-        let command = tokens.map { $0.toString() }.joined(separator: " ")
-        commands.append(command)
+func createNCommandsToken(n: Int) async -> String {
+    var commands = Array(repeating: "", count: n)
+    await withTaskGroup(of: (Int, String).self) { group in
+        for index in 0..<n {
+            group.addTask {
+                let tokens = expandToken(.variable(.CC))
+                let command = tokens.map { $0.toString() }.joined(separator: " ")
+                return (index, command)
+            }
+        }
+        for await (index, command) in group {
+            commands[index] = command
+        }
     }
     return commands.joined(separator: "\n")
 }
